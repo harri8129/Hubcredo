@@ -109,24 +109,27 @@ WSGI_APPLICATION = 'Backend.wsgi.application'
 
 
 # ---- PostgreSQL ----
-# DATABASES = {
-#     'default': {
-#         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
-#         'NAME': os.getenv('DB_NAME', 'Hubcredo_users'),
-#         'USER': os.getenv('DB_USER', 'postgres'),
-#         'PASSWORD': os.getenv('DB_PASSWORD', 'password'),
-#         'HOST': os.getenv('DB_HOST', 'localhost'),
-#         'PORT': os.getenv('DB_PORT', '5432'),
-#     }
-# }
+# Database configuration with fallback for local development
+database_url = os.getenv("DATABASE_URL")
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv("DATABASE_URL"),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
+if database_url:
+    # Use Railway or production database
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=database_url,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    # Fallback to SQLite for local development if no DATABASE_URL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
 
 
 # Password validation
