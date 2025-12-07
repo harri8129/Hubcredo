@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         if (access) {
-            API.get("/auth/me/")
+            API.get("/api/auth/me/")
                 .then((res) => setUser(res.data))
                 .catch(() => {
                     logout();
@@ -21,20 +21,20 @@ export const AuthProvider = ({ children }) => {
     }, [access]);
 
     const login = async (email, password) => {
-        const res = await API.post("/auth/login/", { email, password });
+        const res = await API.post("/api/auth/login/", { email, password });
         const { access, refresh } = res.data;
+
         setAccess(access);
         setRefresh(refresh);
         localStorage.setItem("access", access);
         localStorage.setItem("refresh", refresh);
-        // fetch current user
-        const me = await API.get("/auth/me/");
+
+        const me = await API.get("/api/auth/me/");
         setUser(me.data);
     };
 
     const signup = async (email, password, username) => {
-        await API.post("/auth/register/", { email, password, username });
-        // after signup, you can either auto-login or redirect to login page
+        await API.post("/api/auth/register/", { email, password, username });
     };
 
     const logout = () => {
